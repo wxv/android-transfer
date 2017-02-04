@@ -1,12 +1,16 @@
 #!/bin/env python3
 # Trying to automate android backups but fed up with bash :(
 
+# TODO: cleanup mode selection
+
 import os
 import subprocess
 import sys
 
-PHONE_BACKUP_DIR = "sdcard1/TWRP/BACKUPS/cb180349"  
+SD_DIR = "sdcard1"
+PHONE_BACKUP_DIR = "sdcard1/TWRP/BACKUPS/cb180349"
 PC_BACKUP_DIR = os.environ["HOME"] + "/TWRP-Backups"
+BACKUP_MODE = "sdcard"
 
 
 def main():
@@ -18,16 +22,25 @@ def main():
     mountpoint = os.listdir(MTP_PATH)[0]
     print("Using first mountpoint found:", mountpoint)
 
-    
-    phone_dir_full = MTP_PATH + '/' + mountpoint + '/' + PHONE_BACKUP_DIR
-    if not os.listdir(phone_dir_full):
-        print("No phone backups found in:", phone_dir_full)
+    if BACKUP_MODE == "TWRP":
+        phone_dir_full = MTP_PATH + '/' + mountpoint + '/' + PHONE_BACKUP_DIR
+        if not os.listdir(phone_dir_full):
+            print("No phone backups found in:", phone_dir_full)
+            return
+
+        phone_backup = os.listdir(phone_dir_full)[-1]
+        print("Using last phone backup found:", phone_backup)
+
+        phone_backup_full = phone_dir_full + '/' + phone_backup
+
+    elif BACKUP_MODE == "sdcard":
+        phone_backup_full = MTP_PATH + '/' + mountpoint + '/' + SD_DIR
+        
+    else:
+        print("Unrecognized mode")
         return
 
-    phone_backup = os.listdir(phone_dir_full)[-1]
-    print("Using last phone backup found:", phone_backup)
 
-    phone_backup_full = phone_dir_full + '/' + phone_backup
     args = ["rsync", "-avP", phone_backup_full, PC_BACKUP_DIR]
     print("Starting subprocess with args", args)
 
