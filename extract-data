@@ -1,0 +1,7 @@
+#!/bin/sh
+# Extract data from TWRP compressed data.ext.win00x files
+
+7z e $1  # zip format, but unzip doesn't like it
+tar -xf data.ext4
+mv data data\($1\)  # Avoid confusion over multiple data folders
+rm -f data.ext4
