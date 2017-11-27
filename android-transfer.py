@@ -22,11 +22,11 @@ def main(backup_mode=0, append=False):
     mountpoint = os.listdir(MTP_PATH)[0]
     print("Using first mountpoint found:", mountpoint)
 
-    phone_path = MTP_PATH + '/' + mountpoint + '/'
+    phone_path = os.path.join(MTP_PATH, mountpoint)
 
     if backup_mode == 0:
         # Transfer last backup found in PHONE_BACKUP_DIR
-        phone_dir_full = phone_path + PHONE_BACKUP_DIR
+        phone_dir_full = os.path.join(phone_path, PHONE_BACKUP_DIR)
         if not os.listdir(phone_dir_full):
             print("No phone backups found in:", phone_dir_full)
             return
@@ -34,15 +34,15 @@ def main(backup_mode=0, append=False):
         phone_backup = os.listdir(phone_dir_full)[-1]
         print("Using last phone backup found:", phone_backup)
 
-        src_path_final = phone_dir_full + '/' + phone_backup
+        src_path_final = os.path.join(phone_dir_full, phone_backup)
 
     elif backup_mode == 1:
         # Transfer contents of SD card
-        src_path_final = phone_path + SD_DIR
+        src_path_final = os.path.join(phone_path, SD_DIR)
 
     elif backup_mode == 2:
         # Transfer everything in data/media (or "Internal shared storage")
-        src_path_final = MTP_PATH + '/' + mountpoint + '/' + DATA_MEDIA_PATH
+        src_path_final = os.path.join(MTP_PATH, mountpoint, DATA_MEDIA_PATH)
 
     else:
         print("Unrecognized mode")
@@ -69,4 +69,4 @@ def main(backup_mode=0, append=False):
             
 
 if __name__ == "__main__":
-    main(backup_mode=2, append=True)
+    main(backup_mode=0, append=True)
